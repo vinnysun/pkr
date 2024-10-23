@@ -43,8 +43,11 @@ file(GLOB
 # 	crypto, ssl, numa, rt, stdc++, z, lz4
 
 # Add source to this project's executable.
-add_executable (solver "solver.cpp" "rps.h" "blotto.h")
+#add_executable (solver "solver.cpp" "rps.h" "blotto.h")
+add_executable (solver ${solver_srcs})
 
+#target_compile_options(solver PRIVATE -g -static -O3 -Wall -Werror -march=native -finline-functions -flto -fsanitize=address)
+target_compile_options(solver PRIVATE -g -static -O3 -Wall -Werror -march=native -finline-functions -flto )
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET solver PROPERTY CXX_STANDARD 20)
 endif()

@@ -22,7 +22,7 @@ int main()
 		std::cout << blotto.rng() << '\n';
 	}
 	*/
-	blotto.train(1'000'0000);
+	blotto.train(10'000'000);
 
 
 	std::cout << std::endl;

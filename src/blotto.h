@@ -19,17 +19,50 @@
 
 namespace bf {
 
+template<typename T>
+constexpr T n_choose_k(T n, T k) {
+	if (k > n) return 0;
+	if (k * 2 > n) k = n-k;
+	if (k == 0 or k == n) return 1;
+
+	T result = n;
+	for (T i = 2; i <= k; ++i) {
+			result *= (n - i + 1);
+			result /= i;
+	}
+	return result;
+}
+
+template<typename T>
+int battle(const T& h, const T& v) {
+	int score = 0;
+	assert(h.size() == v.size());
+	for (size_t i = 0; i < h.size(); i++) {
+		if (h[i] > v[i]) score++;
+		else if (h[i] < v[i]) score--;
+	}
+	return score > 0 ? 1 : (score < 0 ? -1 : 0);
+}
+
 template <size_t N>
 struct strategy_t : public std::array<uint64_t, N> {
 	template<typename... Args>
 	strategy_t(Args&&... args)
-		: std::array<uint64_t, N>(std::forward<Args>(args)...)
+		// : std::array<uint64_t, N>(std::forward<Args>(args)...)
+		: std::array<uint64_t, N>()//std::forward<Args>(args)...)
 	{
+		std::cout << "strat constructor\n";
+		// static_assert(sizeof...(args) == N, "bad num args");
+		size_t idx = 0;
+		for (auto n : {args...}) {
+			std::cout << n;
+			this[idx++] = n;
+		}
 	}
 
 	int battle(const strategy_t<N>& other) const {
 		int score = 0;
-		for (int i = 0; i < N; i++) {
+		for (int i = 0; i < this->size(); i++) {
 			//std::cout << this->at(i) << " " << other.at(i) << " ";
 			if (this->at(i) > other.at(i)) {
 				score++;
@@ -70,15 +103,21 @@ struct action_t {
 
 template <size_t S, size_t N>
 struct player_t {
-	player_t(const std::vector<strategy_t<N>>& all_actions)
+	player_t(const std::vector<std::vector<uint64_t>>& all_actions)
 		: m_all_actions(all_actions)
-		, m_utilities(all_actions.size(), 0)
+		, m_utilities(m_all_actions.size(), 0)
 		, m_regret_sum(m_all_actions.size(), 0)
 		, m_strategy(m_all_actions.size(), 0)
 		, m_strategy_sum(m_all_actions.size(), 0)
 	{
 
 	}
+
+	/*
+	void init(const std::all_actions) {
+		m_all_actions = all_actions;
+	}
+	*/
 
 	uint64_t get_action(double rng) {
 		double sum = 0;
@@ -122,9 +161,10 @@ struct player_t {
 		// TODO precompute result of every possible pair of actions, use that to populate this
 		// this vector is "if they play villian_action, what's my utility for each action i could've taken?"
 		for (size_t i = 0; i < m_utilities.size(); i++) {
-			const auto& hero = m_all_actions[i];
-			const auto& villian = m_all_actions[villian_action];
-			m_utilities[i] = hero.battle(villian);
+			// const auto& hero = m_all_actions[i];
+			// const auto& villian = m_all_actions[villian_action];
+			// m_utilities[i] = hero.battle(villian);
+			m_utilities[i] = battle(m_all_actions[i], m_all_actions[villian_action]);
 		}
 
 		// now that we have our utility of our possible actions,
@@ -155,7 +195,9 @@ struct player_t {
 		}
 	}
 
-	const std::vector<strategy_t<N>>& m_all_actions;
+	// const std::vector<strategy_t<N>>& m_all_actions;
+	// const std::array<strategy_t<N>, n_choose_k(S+2, N+1)>& m_all_actions;
+	const std::vector<std::vector<uint64_t>>& m_all_actions;
 	std::vector<double> m_utilities;
 	std::vector<double> m_regret_sum;
 	std::vector<double> m_strategy;
@@ -164,22 +206,38 @@ struct player_t {
 
 template<size_t S, size_t N>
 struct blotto_t {
+	static constexpr uint64_t NUM_ALL_STRATEGIES = n_choose_k(S + 2, N + 1);
 	blotto_t()
 		: m_all_strategies(generate_all_strategies(S, N))
 		, m_hero(m_all_strategies)
 		, m_villian(m_all_strategies)
-		, m_rng(m_rd())
 		, m_dist(std::uniform_real_distribution<>(0, 1))
+		, m_rng(m_rd())
 	{
+		/*
+		m_all_strategies = generate_all_strategies(S, N);
+		m_hero.init(m_all_strategies);
+		m_villian.init(m_all_strategies);
+		*/
+		std::cout << "num strategies: " << m_all_strategies.size() << "\n";
+		for (const auto& strat : m_all_strategies) {
+			for (auto n : strat) {
+				std::cout << n;
+			}
+			std::cout << "\n";
+		}
 	}
 
-	constexpr auto generate_all_strategies(size_t num_soldiers, size_t num_battlefields) {
-		std::vector<strategy_t<N>> all_strategies;
-		for (uint64_t b1 = 0; b1 < S; b1++) {
-			for (uint64_t b2 = 0; b2 < S; b2++) {
-				for (uint64_t b3 = 0; b3 < S; b3++) {
+	auto generate_all_strategies(size_t num_soldiers, size_t num_battlefields) {
+		std::vector<std::vector<uint64_t>> all_strategies;
+		// all_strategies.reserve(NUM_ALL_STRATEGIES);
+		// TODO need a version not harded coded for 3 battlefields
+		for (uint64_t b1 = 0; b1 <= S; b1++) {
+			for (uint64_t b2 = 0; b2 <= S; b2++) {
+				for (uint64_t b3 = 0; b3 <= S; b3++) {
 					if (b1 + b2 + b3 == S) {
-						all_strategies.emplace_back(b1, b2, b3);
+						all_strategies.push_back(std::vector{b1, b2, b3});
+						// all_strategies.emplace_back({b1, b2, b3});
 					}
 				}
 			}
@@ -242,22 +300,32 @@ struct blotto_t {
 		}
 
 		int result = 0;
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < 500000; i++) {
 			double r = rng();
-			const auto& hero_action = m_all_strategies[m_hero.get_avg_action(r)];
+			// const auto& hero_action = m_all_strategies[m_hero.get_avg_action(r)];
+			size_t hero_action = m_hero.get_action(r);
 			r = rng();
-			const auto& villian_action = m_all_strategies[m_villian.get_avg_action(r)];
+			// const auto& villian_action = m_all_strategies[m_villian.get_avg_action(r)];
+			size_t villian_action = m_villian.get_action(r);
 			//std::cout << "hero action: " << hero_action << "villian action: " 
 			//	<< villian_action << "score: " << hero_action.battle(villian_action) << "\n";
 
-			result += hero_action.battle(villian_action);
+			// result += hero_action.battle(villian_action);
+			result += battle(m_all_strategies[hero_action], m_all_strategies[villian_action]);
 		}
 
 		std::cout << "result: " << result << "\n";
 	}
 
 	// constexpr static uint64_t NUM_ALL_STRATEGIES = N ** S;
-	std::vector<strategy_t<N>> m_all_strategies;
+	// with N battlefields and S soldiers, (S+2 choose N-1) ways to alloc
+	// put S soldiers in a line, place N - 1 "dividers"
+	//   S S S S S
+	//  |     |
+	// this alloc is 0/3/2
+	// const std::array<strategy_t<N>, NUM_ALL_STRATEGIES> m_all_strategies;
+	// const std::vector<strategy_t<N>> m_all_strategies;
+	const std::vector<std::vector<uint64_t>> m_all_strategies;
 
 	player_t<S, N> m_hero;
 	player_t<S, N> m_villian;

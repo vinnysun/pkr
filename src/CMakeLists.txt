@@ -13,9 +13,12 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
 
 # find_package(packagename COMPONENTS component names REQUIRED)
 # eg boost components progoptions/iostreams, mysql++, zeromq, efvi, etc
+find_package(Boost COMPONENTS program_options REQUIRED)
 
 include_directories(
   "${PROJECT_SOURCE_DIR}"
+  "${Boost_INCLUDE_DIR}"
+  "/usr/local/include/"
   # other path/to/include
   )
 
@@ -51,6 +54,13 @@ target_compile_options(solver PRIVATE -g -static -O3 -Wall -Werror -march=native
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET solver PROPERTY CXX_STANDARD 20)
 endif()
+
+target_link_libraries(
+  solver
+
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+)
+
 
 # TODO: Add tests and install targets if needed.
 

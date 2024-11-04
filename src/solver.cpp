@@ -1,15 +1,32 @@
 ﻿// solver.cpp : Defines the entry point for the application.
 //
 
+#include <iostream>
+#include <boost/program_options.hpp>
+
 #include "rps.h"
 #include "blotto.h"
-#include <iostream>
 
-using namespace std;
 
-int main()
-{
-	cout << "Hello CMake." << endl;
+int main(int argc, char** argv) {
+	namespace po = boost::program_options;
+	po::options_description desc("game solver");
+
+	std::string game;
+
+	desc.add_options()
+		("game", po::value<std::string>(&game)->required());
+
+	po::variables_map vm;
+	try {
+		po::store(po::parse_command_line(argc, argv, desc), vm);
+		po::notify(vm);
+	} catch (const std::exception& ex) {
+		std::cout << desc << std::endl;
+		return 1;
+	}
+
+	std::cout << "simming: " << game << "\n";
 
 	// rps_t rps{ 100000 };
 	// rps.train();

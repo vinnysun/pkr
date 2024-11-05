@@ -2,6 +2,7 @@ import numpy as np
 import random
 from enum import Enum
 import time
+import argparse
 
 # basically copied from cfr.pdf for now
 
@@ -113,6 +114,11 @@ def train(iters: int) -> None:
     for node in nodes:
         print(node)
 
-train(100000)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--iters', required=True, type=int)
+    args = parser.parse_args()
+
+    train(args.iters)
 
 

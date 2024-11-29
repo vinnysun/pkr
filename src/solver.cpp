@@ -13,9 +13,11 @@ int main(int argc, char** argv) {
 	po::options_description desc("game solver");
 
 	std::string game;
+	int iters;
 
 	desc.add_options()
-		("game", po::value<std::string>(&game)->required());
+		("game", po::value<std::string>(&game)->required())
+		("iters", po::value<int>(&iters)->default_value(1000000));
 
 	po::variables_map vm;
 	try {
@@ -28,8 +30,12 @@ int main(int argc, char** argv) {
 
 	std::cout << "simming: " << game << "\n";
 
-	// rps_t rps{ 100000 };
-	// rps.train();
+	if (game == "rps") {
+		rps_t rps{ iters };
+		rps.train();
+	} else if (game == "blotto") {
+
+	}
 
 	constexpr size_t num_soldiers = 5;
 	constexpr size_t num_battlefields = 3;

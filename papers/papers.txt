@@ -1,0 +1,8 @@
+https://arxiv.org/pdf/1811.00164
+http://modelai.gettysburg.edu/2013/cfr/cfr.pdf - paper with example games
+https://github.com/ArmanMielke/simple-poker-cfr
+https://poker.cs.ualberta.ca/publications/NIPS07-cfr.pdf - og paper
+https://rnikhil.com/2023/12/31/ai-cfr-solver-poker.html - blog post
+https://aipokertutorial.com/the-cfr-algorithm/ - url name self explanatory
+https://github.com/tansey/pycfr
+https://www.youtube.com/watch?v=ygDt_AumPr0 - step by step 1 iter of algo

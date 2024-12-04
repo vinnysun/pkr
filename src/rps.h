@@ -206,7 +206,7 @@ struct rps_t {
 
 	void train() {
 		std::vector<double> action_utility(NUM_ACTIONS, 0);
-		for (size_t iter = 0; iter < m_iters; ++iter) {
+		for (int iter = 0; iter < m_iters; ++iter) {
 			// get regret matched mixed strategy actions
 			double r = rng();
 

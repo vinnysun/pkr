@@ -6,6 +6,7 @@
 
 #include "rps.h"
 #include "blotto.h"
+#include "kuhn.h"
 
 
 int main(int argc, char** argv) {
@@ -28,26 +29,23 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
+	if (vm.count("help")) {
+		std::cout << desc << std::endl;
+		return 0;
+	}
+
 	std::cout << "simming: " << game << "\n";
 
 	if (game == "rps") {
 		rps_t rps{ iters };
 		rps.train();
 	} else if (game == "blotto") {
+		constexpr size_t num_soldiers = 5;
+		constexpr size_t num_battlefields = 3;
+		bf::blotto_t<num_soldiers, num_battlefields> blotto;
 
+		blotto.train(iters);
 	}
 
-	constexpr size_t num_soldiers = 5;
-	constexpr size_t num_battlefields = 3;
-	bf::blotto_t<num_soldiers, num_battlefields> blotto;
-	/*
-	for (int i = 0; i < 1000; i++) {
-		std::cout << blotto.rng() << '\n';
-	}
-	*/
-	blotto.train(10'000'000);
-
-
-	std::cout << std::endl;
 	return 0;
 }

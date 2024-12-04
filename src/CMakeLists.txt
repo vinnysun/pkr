@@ -1,13 +1,17 @@
 ﻿# CMakeList.txt : CMake project for solver, include source and define
 # project specific logic here.
 #
-cmake_minimum_required (VERSION 3.8)
-project ("solver")
+cmake_minimum_required (VERSION 3.31)
+project("solver")
 
 add_definitions(-std=c++2a)
+set(CMAKE_BUILD_TYPE Debug)
+
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/../bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
 
@@ -17,15 +21,13 @@ find_package(Boost COMPONENTS program_options REQUIRED)
 
 include_directories(
   "${PROJECT_SOURCE_DIR}"
-  "${Boost_INCLUDE_DIR}"
   "/usr/local/include/"
-  # other path/to/include
   )
 
 # message(stuff here) to print
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 
 # start solver
 file(GLOB
@@ -50,7 +52,8 @@ file(GLOB
 add_executable (solver ${solver_srcs})
 
 #target_compile_options(solver PRIVATE -g -static -O3 -Wall -Werror -march=native -finline-functions -flto -fsanitize=address)
-target_compile_options(solver PRIVATE -g -static -O3 -Wall -Werror -march=native -finline-functions -flto )
+target_compile_options(solver PRIVATE -g -static -O3 -Wall -Werror -Wshadow -Wextra -march=native -finline-functions -flto)
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET solver PROPERTY CXX_STANDARD 20)
 endif()
@@ -61,8 +64,3 @@ target_link_libraries(
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
 )
 
-
-# TODO: Add tests and install targets if needed.
-
-# example
-# 

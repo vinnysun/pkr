@@ -208,7 +208,7 @@ template<size_t S, size_t N>
 struct blotto_t {
 	static constexpr uint64_t NUM_ALL_STRATEGIES = n_choose_k(S + 2, N + 1);
 	blotto_t()
-		: m_all_strategies(generate_all_strategies(S, N))
+		: m_all_strategies(generate_all_strategies())
 		, m_hero(m_all_strategies)
 		, m_villian(m_all_strategies)
 		, m_dist(std::uniform_real_distribution<>(0, 1))
@@ -228,7 +228,7 @@ struct blotto_t {
 		}
 	}
 
-	auto generate_all_strategies(size_t num_soldiers, size_t num_battlefields) {
+	auto generate_all_strategies() {
 		std::vector<std::vector<uint64_t>> all_strategies;
 		// all_strategies.reserve(NUM_ALL_STRATEGIES);
 		// TODO need a version not harded coded for 3 battlefields
@@ -284,7 +284,7 @@ struct blotto_t {
 		auto villian = m_villian.average_strategy();
 		
 		std::cout << "hero:\n";
-		for (int i = 0; i < hero.size(); i++) {
+		for (size_t i = 0; i < hero.size(); i++) {
 			const auto& strat = m_all_strategies[i];
 			double p = hero[i];
 			std::cout << "[" << strat[0] << " " << strat[1] << " " << strat[2] << "] "
@@ -292,7 +292,7 @@ struct blotto_t {
 		}
 		
 		std::cout << "\nvillian:\n";
-		for (int i = 0; i < villian.size(); i++) {
+		for (size_t i = 0; i < villian.size(); i++) {
 			const auto& strat = m_all_strategies[i];
 			double p = villian[i];
 			std::cout << "[" << strat[0] << " " << strat[1] << " " << strat[2] << "] "

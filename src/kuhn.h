@@ -37,10 +37,10 @@ void normalize(T& arr) {
 	}
 }
 
-using StrategyT = std::array<double, NUM_ACTIONS>;
+using strategy_t = std::array<double, NUM_ACTIONS>;
 
 template<typename stream_t>
-stream_t& operator<<(stream_t& ss, const StrategyT& strat) {
+stream_t& operator<<(stream_t& ss, const strategy_t& strat) {
 	ss << std::fixed << std::setprecision(4);
 	ss << "[PASS=" << strat[0] << " BET=" << strat[1] << "]";
 	return ss;
@@ -54,7 +54,7 @@ struct node_t {
 		m_strategy_sum.fill(0);
 	}
 
-	const StrategyT& get_strategy(double realization_weight) {
+	const strategy_t& get_strategy(double realization_weight) {
 		for (size_t i = 0; i < m_regret_sum.size(); i++) {
 			m_strategy[i] = std::max(m_regret_sum[i], 0.0);
 		}
@@ -66,8 +66,8 @@ struct node_t {
 		return m_strategy;
 	}
 
-	StrategyT get_average_strategy() const {
-		StrategyT strat;
+	strategy_t get_average_strategy() const {
+		strategy_t strat;
 		std::copy(m_strategy_sum.begin(), m_strategy_sum.end(), strat.begin());
 		normalize(strat);
 		return strat;
@@ -80,9 +80,9 @@ struct node_t {
 	}
 	
 	const std::string m_infoset;
-	StrategyT m_regret_sum;
-	StrategyT m_strategy;
-	StrategyT m_strategy_sum;
+	strategy_t m_regret_sum;
+	strategy_t m_strategy;
+	strategy_t m_strategy_sum;
 };
 
 template<typename stream_t>
@@ -130,7 +130,7 @@ public:
 
 		// for each action, recursively call cfr with additional history and probability
 		const auto& strategy = node.get_strategy(p_hero);
-		StrategyT util;
+		strategy_t util;
 		util.fill(0);
 		double node_util = 0.0;
 		for (size_t action = 0; action < NUM_ACTIONS; action++) {

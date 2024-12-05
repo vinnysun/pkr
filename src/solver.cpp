@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 
-	std::cout << "simming: " << game << "\n";
+	std::cout << "solving: " << game << "\n";
 
 	if (game == "rps") {
 		rps_t rps{ iters };
@@ -45,6 +45,11 @@ int main(int argc, char** argv) {
 		bf::blotto_t<num_soldiers, num_battlefields> blotto;
 
 		blotto.train(iters);
+	} else if (game == "kuhn") {
+		kuhn::solver_t solver;
+		solver.train(iters);
+
+		solver.show();
 	}
 
 	return 0;

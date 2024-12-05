@@ -37,10 +37,17 @@ void normalize(T& arr) {
 	}
 }
 
-using strategy_t = std::array<double, NUM_ACTIONS>;
+struct strategy_t : std::array<double, NUM_ACTIONS> {
+	template<typename... Args>
+	strategy_t(Args&&... args)
+	: std::array<double, NUM_ACTIONS>(std::forward<Args>(args)...) {
+		fill(0.0);
+	}
+};
 
-template<typename stream_t>
-stream_t& operator<<(stream_t& ss, const strategy_t& strat) {
+//template<typename stream_t>
+//stream_t& operator<<(stream_t& ss, const strategy_t& strat) {
+std::ostream& operator<<(std::ostream& ss, const strategy_t& strat) {
 	ss << std::fixed << std::setprecision(4);
 	ss << "[PASS=" << strat[0] << " BET=" << strat[1] << "]";
 	return ss;
@@ -48,11 +55,7 @@ stream_t& operator<<(stream_t& ss, const strategy_t& strat) {
 
 struct node_t {
 
-	node_t(std::string infoset) : m_infoset(infoset) {
-		m_strategy.fill(0);
-		m_regret_sum.fill(0);
-		m_strategy_sum.fill(0);
-	}
+	node_t(std::string infoset) : m_infoset(infoset) {}
 
 	const strategy_t& get_strategy(double realization_weight) {
 		for (size_t i = 0; i < m_regret_sum.size(); i++) {
@@ -131,7 +134,6 @@ public:
 		// for each action, recursively call cfr with additional history and probability
 		const auto& strategy = node.get_strategy(p_hero);
 		strategy_t util;
-		util.fill(0);
 		double node_util = 0.0;
 		for (size_t action = 0; action < NUM_ACTIONS; action++) {
 			history.push_back(action == 0 ? 'p' : 'b');

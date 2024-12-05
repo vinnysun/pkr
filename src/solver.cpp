@@ -51,6 +51,5 @@ int main(int argc, char** argv) {
 
 		solver.show();
 	}
-
-	return 0;
 }
+

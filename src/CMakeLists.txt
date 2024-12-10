@@ -34,7 +34,7 @@ file(GLOB
   solver_srcs
   # path/to/*cpps
   solver.cpp
- )
+)
 
 # add_executable(solver ${solver_srcs})
 # target_compile_options(solver PRIVATE -g -static -O3 -Wall -Werror -march=native -finline-functions -flto)
@@ -49,18 +49,26 @@ file(GLOB
 
 # Add source to this project's executable.
 #add_executable (solver "solver.cpp" "rps.h" "blotto.h")
-add_executable (solver ${solver_srcs})
+add_executable(solver ${solver_srcs})
 
 #target_compile_options(solver PRIVATE -g -static -O3 -Wall -Werror -march=native -finline-functions -flto -fsanitize=address)
 target_compile_options(solver PRIVATE -g -static -O3 -Wall -Werror -Wshadow -Wextra -march=native -finline-functions -flto)
-
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET solver PROPERTY CXX_STANDARD 20)
-endif()
 
 target_link_libraries(
   solver
 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
 )
+
+file(GLOB
+  dudotest
+  dudo_test.cpp
+)
+
+add_executable(dudotest ${dudotest})
+target_compile_options(dudotest PRIVATE -g -static -O3 -Wall -Werror -Wshadow -Wextra -march=native -finline-functions -flto)
+
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+  set_property(TARGET solver dudotest PROPERTY CXX_STANDARD 20)
+endif()
 

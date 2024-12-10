@@ -7,6 +7,7 @@
 #include "rps.h"
 #include "blotto.h"
 #include "kuhn.h"
+#include "dudo.h"
 
 
 int main(int argc, char** argv) {
@@ -47,6 +48,11 @@ int main(int argc, char** argv) {
 		blotto.train(iters);
 	} else if (game == "kuhn") {
 		kuhn::solver_t solver;
+		solver.train(iters);
+
+		solver.show();
+	} else if (game == "dudo") {
+		dudo::solver_t solver;
 		solver.train(iters);
 
 		solver.show();
